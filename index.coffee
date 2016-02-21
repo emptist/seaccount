@@ -20,7 +20,7 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
   操作指令:(obj, 回應)->
     #過濾操作指令,回復操作指令string或null
     回應 switch obj.操作
-      when 'cancelIt' then null
+      when 'cancelIt' then obj
       when 'buyIt'
         ###
         須逐步實現以下買入控制:
@@ -29,7 +29,7 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
           1. 檢查委託價格
           1. 回報成交狀態
         ###
-        
+
         ###若已有該品種,查數量不令超重
         ###
         if obj.代碼 in @可用

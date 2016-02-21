@@ -58,7 +58,7 @@ HSClientAccount = (function(superClass) {
       var ref, ref1;
       switch (obj.操作) {
         case 'cancelIt':
-          return null;
+          return obj;
         case 'buyIt':
 
           /*
