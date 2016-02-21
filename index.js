@@ -55,14 +55,30 @@ HSClientAccount = (function(superClass) {
 
   HSClientAccount.prototype.操作指令 = function(obj, 回應) {
     return 回應((function() {
-      var ref;
+      var ref, ref1;
       switch (obj.操作) {
         case 'cancelIt':
           return null;
         case 'buyIt':
-          return obj;
-        case 'sellIt':
+
+          /*
+          須逐步實現以下買入控制:
+            1. 排除黑名單
+            1. 調整買入數量,令不超比例
+            1. 檢查委託價格
+            1. 回報成交狀態
+           */
+
+          /*若已有該品種,查數量不令超重
+           */
           if (ref = obj.代碼, indexOf.call(this.可用, ref) >= 0) {
+            return console.log("todo: 持倉品種比重控制");
+          } else {
+            return obj;
+          }
+          break;
+        case 'sellIt':
+          if (ref1 = obj.代碼, indexOf.call(this.可用, ref1) >= 0) {
             return obj;
           } else {
             return null;
@@ -74,17 +90,16 @@ HSClientAccount = (function(superClass) {
     }).call(this));
   };
 
-  HSClientAccount.prototype.最新簡況 = function(data, callback) {
-    return this.最新持倉(data, callback);
+  HSClientAccount.prototype.查詢簡況 = function(data, callback) {
+    return this.查詢持倉(data, callback);
   };
 
-  HSClientAccount.prototype.最新持倉 = function(data, callback) {
-    var code, command, key, results, tick, 比重;
+  HSClientAccount.prototype.查詢持倉 = function(data, callback) {
+    var code, command, key, tick, 比重;
     比重 = function(code) {
       return 0.618;
     };
     this.可用 = [];
-    results = [];
     for (key in data) {
       tick = data[key];
       code = tick.SecurityCode;
@@ -93,26 +108,22 @@ HSClientAccount = (function(superClass) {
         在@可用中存儲可用證券之代碼
         更新數據庫中的品種代碼表還需要嗎?
        */
-      if (tick.SecurityAmount > 0) {
+      if (tick.SecurityAvail > 0) {
         this.可用.push(code);
         if (tick.Profit < 0) {
           command = "sellIt," + code + "," + (比重(code)) + "," + tick.LastPrice;
-          results.push(callback(command));
-        } else {
-          results.push(void 0);
+          callback(command);
         }
-      } else {
-        results.push(void 0);
       }
     }
-    return results;
+    return this.持倉 = data;
   };
 
-  HSClientAccount.prototype.最新資產 = function(data, callback) {
+  HSClientAccount.prototype.查詢資產 = function(data, callback) {
     return util.log("got funds data");
   };
 
-  HSClientAccount.prototype.可撤單 = function(data, callback) {
+  HSClientAccount.prototype.查可撤單 = function(data, callback) {
     return util.log("got orders data");
   };
 
