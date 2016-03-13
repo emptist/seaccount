@@ -4,6 +4,9 @@
   "description": "security account",
   "main": "index.js",
   "scripts": {
+    "preversion": "coffee -bcmo . ; git commit -am 'modified and re-build js;'",
+    "postversion": "git push;",
+    "prepublish": "cd ..; echo 現在發佈",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -15,5 +18,9 @@
   "bugs": {
     "url": "https://github.com/emptist/seaccount/issues"
   },
-  "homepage": "https://github.com/emptist/seaccount#readme"
+  "homepage": "https://github.com/emptist/seaccount#readme",
+  "devDependencies": {
+    "ib": "^0.1.8",
+    "ib-sdk": "^0.2.0"
+  }
 }
