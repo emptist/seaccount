@@ -116,6 +116,7 @@ HSClientAccount = (function(superClass) {
         }
       }
     }
+    util.log(this.可用);
     return this.持倉 = data;
   };
 
