@@ -60,7 +60,7 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
           command = "sellIt,#{code},#{比重(code)},#{tick.LastPrice}"
           callback(command)
 
-    util.log("seaccount 可用品種:",@可用) 
+    #util.log("seaccount 可用品種:",@可用) 
     @持倉 = data
 
   查詢資產: (data, callback)->
