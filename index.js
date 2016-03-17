@@ -72,7 +72,8 @@ HSClientAccount = (function(superClass) {
           /*若已有該品種,查數量不令超重
            */
           if (ref = obj.代碼, indexOf.call(this.可用, ref) >= 0) {
-            return console.log("todo: 持倉品種比重控制");
+            console.log("todo: 持倉品種比重控制");
+            return obj;
           } else {
             return obj;
           }
