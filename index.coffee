@@ -34,8 +34,10 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
         ###
         if obj.代碼 in @可用
           console.log "todo: 持倉品種比重控制"
+          obj
         else # 還可以控制剩餘資金是否購買,不夠須調整比重.等等.
           obj
+
       when 'sellIt'
         if obj.代碼 in @可用 then obj else null
       else null
@@ -60,7 +62,7 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
           command = "sellIt,#{code},#{比重(code)},#{tick.LastPrice}"
           callback(command)
 
-    #util.log("seaccount 可用品種:",@可用) 
+    #util.log("seaccount 可用品種:",@可用)
     @持倉 = data
 
   查詢資產: (data, callback)->
