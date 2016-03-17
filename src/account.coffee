@@ -33,7 +33,7 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
         ###若已有該品種,查數量不令超重
         ###
         if obj.代碼 in @可用
-          console.log "todo: 持倉品種比重控制"
+          console.log obj.代碼, "todo: 持倉品種比重控制"
           obj
         else # 還可以控制剩餘資金是否購買,不夠須調整比重.等等.
           obj
