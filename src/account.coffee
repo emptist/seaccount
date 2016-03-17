@@ -1,5 +1,5 @@
 # 一種幣種資金狀況的資產賬戶
-util = require 'util'
+util = require('util')
 
 class FundAccount # 單幣種資產賬戶
   constructor:(@幣種)->
