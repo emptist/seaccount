@@ -43,8 +43,6 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
         if obj.代碼 in @黑名單
           console.error "#{obj.代碼}  列入黑名單,不買"
           null
-        ###若已有該品種,查數量不令超重
-        ###
         else if obj.代碼 in @持倉
           if 超重(obj.代碼)
             null
