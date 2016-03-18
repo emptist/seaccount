@@ -15,7 +15,7 @@ class IBClientAccount extends ClientAccount
 ###
 class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬戶不同,各公司不同部分再分解到子法
   constructor: (@broker,@id,@password,@servicePassword)->
-    @持倉 = []
+    @現有 = []
     @可用 = []
     @資產 = null
     @黑名單 = []
@@ -43,7 +43,7 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
         if obj.代碼 in @黑名單
           console.error "#{obj.代碼}  列入黑名單,不買"
           null
-        else if obj.代碼 in @持倉
+        else if obj.代碼 in @現有
           if 超重(obj.代碼)
             null
           else
@@ -63,7 +63,7 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
 
   # 並執行止損
   查詢持倉: (data, callback)->
-    @持倉 = []
+    @現有 = []
     @可用 = []
     ### 此處可對不同類型品種設置不同的止損比重率,
       或可在證券中設定,但每個賬戶的風險控制不同,故應因人制宜
@@ -73,7 +73,7 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
       代碼 = tick.SecurityCode
       可用數量 = tick.SecurityAvail
       浮動盈虧 = tick.Profit
-      @持倉.push 代碼
+      @現有.push 代碼
       ###
         在@可用中存儲可用證券之代碼
         更新數據庫中的品種代碼表還需要嗎?
