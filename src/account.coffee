@@ -47,7 +47,7 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
           #console.error "#{obj.代碼}  列入黑名單,不買"
           null
         else if obj.代碼 in @現有
-          額度 = Math.min(@剩餘額度(代碼), obj.比重)
+          額度 = Math.min(@剩餘額度(obj.代碼), obj.比重)
           if 額度 < 0
             null
           else
