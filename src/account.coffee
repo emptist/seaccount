@@ -18,7 +18,10 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
     @現有 = []
     @可用 = []
     @資產 = null
+    @持倉 = null
     @黑名單 = []
+    @比重上限 = 0.5
+    @最小分倉資金量 = 20000
 
   操作指令:(obj, 回執)->
 
@@ -44,9 +47,11 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
           #console.error "#{obj.代碼}  列入黑名單,不買"
           null
         else if obj.代碼 in @現有
-          if @超重(obj.代碼)
+          額度 = Math.min(@剩餘額度(代碼), obj.比重)
+          if 額度 < 0
             null
           else
+            obj.比重 = 額度
             obj
         else # 還可以控制剩餘資金是否購買,不夠須調整比重.等等.
           obj
@@ -63,8 +68,52 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
 
   # 並執行止損
   查詢持倉: (data, callback)->
+    ###
+      此處的 data 是從華泰Python接口讀入的,目前設置為格式:
+    {
+    '0':
+     { index: 0,
+       av_buy_price: 0.821,
+       av_income_balance: 0,
+       CostPrice: 0.893,
+       SecurityAmount: 15200,
+       SecurityAvail: 0,
+       exchange_name: '深圳Ａ',
+       exchange_type: '2',
+       hand_flag: '0',
+       Profit: 1059.61,
+       income_balance_ratio: 7.81,
+       keep_cost_price: 0.893,
+       LastPrice: 0.963,
+       HoldingValue: 14637.6,
+       stock_account: '0097571759',
+       SecurityCode: '150153',
+       SecurityName: '创业板B',
+       extra: 0.6629212514 },
+    '1':
+     { index: 1,
+       av_buy_price: 1.951,
+       av_income_balance: -40.15,
+       CostPrice: 1.951,
+       SecurityAmount: 0,
+       SecurityAvail: 0,
+       exchange_name: '深圳Ａ',
+       exchange_type: '2',
+       hand_flag: '0',
+       Profit: 284.68,
+       income_balance_ratio: 6.41,
+       keep_cost_price: 1.951,
+       LastPrice: 2.076,
+       HoldingValue: 0,
+       stock_account: '0097571759',
+       SecurityCode: '159915',
+       SecurityName: '创业板',
+       extra: -0.3333333333 },
+       ...}
+    ###
     @現有 = []
     @可用 = []
+    @持倉 = {}
     ### 此處可對不同類型品種設置不同的止損比重率,
       或可在證券中設定,但每個賬戶的風險控制不同,故應因人制宜
     ###
@@ -72,23 +121,62 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
       # 保本式止損
       代碼 = tick.SecurityCode
       可用數量 = tick.SecurityAvail
+      現有數量 = tick.SecurityAmount
       浮動盈虧 = tick.Profit
-      @現有.push 代碼
-      ###
-        在@可用中存儲可用證券之代碼
-        更新數據庫中的品種代碼表還需要嗎?
-      ###
+
+      @持倉[代碼] = tick
+      if 現有數量 > 0
+        @現有.push 代碼
       if 可用數量 > 0
         @可用.push 代碼
         if 浮動盈虧 < 0
           command = "sellIt,#{代碼},#{@求止損比重(代碼)},#{tick.LastPrice}"
           callback(command)
+        else
+          比重 = @應減倉比重(代碼)
+          if 比重 > 0
+            command = "sellIt,#{代碼},#{比重},#{tick.LastPrice}"
+            callback(command)
 
-    #util.log("seaccount 可用品種:",@可用)
-    @持倉 = data
 
   查詢資產: (data, callback)->
-    util.log("got funds data") # callback #, "查詢資產#{data}"
+    ###
+      目前設計從華泰Python接口獲得數據為:
+      { '0':
+       { money_type: '0',
+         TotalAsset: 14692.63,
+         current_balance: 13.43,
+         AvailableFund: 55.03,
+         fetch_balance: 13.43,
+         market_value: 14637.6,
+         money_name: '人民币',
+         rmb_value: 14692.63,
+         rmb_total: 258804.344308,
+         acc_id: 'htweb080300007199' },
+      '1':
+       { money_type: '1',
+         TotalAsset: 37601.55,
+         current_balance: 122.17,
+         AvailableFund: 49.35,
+         fetch_balance: 49.35,
+         market_value: 37552.2,
+         money_name: '美元',
+         rmb_value: 243575.32059,
+         rmb_total: 258804.344308,
+         acc_id: 'htweb080300007199' },
+      '2':
+       { money_type: '2',
+         TotalAsset: 639.63,
+         current_balance: 127.63,
+         AvailableFund: 127.63,
+         fetch_balance: 127.63,
+         market_value: 512,
+         money_name: '港币',
+         rmb_value: 536.393718,
+         rmb_total: 258804.344308,
+         acc_id: 'htweb080300007199' } }
+    ###
+    util.log("got funds #{data}") # callback #, "查詢資產#{data}"
     @資產 = data
 
   查可撤單: (data, callback)->
@@ -100,8 +188,30 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
 
   ### 查閱資產和持倉狀況,計算該證券比重,對照比重限額,回復是否超重
   ###
+  求各幣資產:(代碼)->
+    幣種 = switch 代碼[0]
+      when 9 then '1'
+      when 2 then '2'
+      else '0'
+    @資產[幣種]
+  求市值:(代碼)->
+    @持倉[代碼].HoldingValue
+  求總額:(代碼)->
+    @求各幣資產(代碼).TotalAsset
+
   超重:(代碼)->
-    false
+    @求市值(代碼) / @求總額(代碼) > @比重上限
+
+  剩餘額度:(代碼)->
+    @比重上限 - (@求市值(代碼) / @求總額(代碼))
+
+  應減倉比重:(代碼)->
+    if @求各幣資產(代碼).rmb_value < @最小分倉資金量
+      0
+    else
+      ((@求市值(代碼) / @求總額(代碼)) / @比重上限) - 1
+
+
 
 module.exports =
   HSClientAccount:HSClientAccount
