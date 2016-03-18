@@ -53,7 +53,7 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
           else
             obj.比重 = 額度
             obj
-        else # 還可以控制剩餘資金是否購買,不夠須調整比重.等等.
+        else # 還須 等分資金,控制剩餘資金是否購買,不夠須調整比重.等等.
           obj
 
       when 'sellIt'
@@ -178,11 +178,11 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
     ###
     # util.log("got funds data", data) # callback
     @資產 = data
-    callback data
+    # 剛測試不可以? 須查誰用到此處回執,或許之前設計成不回執 callback data
 
   查可撤單: (data, callback)->
     util.log("got orders data", data)
-    callback data
+    # 剛測試不可以? 須查誰用到此處回執,或許之前設計成不回執 callback data
 
   # 可另寫模塊設定保本止損比重
   求止損比重:(代碼)->
@@ -195,7 +195,7 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
       when 9 then '1'
       when 2 then '2'
       else '0'
-    @資產[幣種]
+    return @資產[幣種]
 
   求市值:(代碼)->
     @持倉[代碼].HoldingValue
