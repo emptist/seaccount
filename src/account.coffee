@@ -188,14 +188,16 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
 
   ### 查閱資產和持倉狀況,計算該證券比重,對照比重限額,回復是否超重
   ###
-  求各幣資產:(代碼)->
+  求各幣資產:(代碼)=>
     幣種 = switch 代碼[0]
       when 9 then '1'
       when 2 then '2'
       else '0'
     @資產[幣種]
+
   求市值:(代碼)->
     @持倉[代碼].HoldingValue
+
   求總額:(代碼)->
     @求各幣資產(代碼).TotalAsset
 
