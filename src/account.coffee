@@ -99,9 +99,12 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
   # 可另寫模塊設定保本止損比重
   求止損比重:(代碼)->
     0.618
+
+  ### 查閱資產和持倉狀況,計算該證券比重,對照比重限額,回復是否超重
+  ###
   超重:(代碼)->
     console.error "account.coffee >> 待 完成 超重()"
     false
-    
+
 module.exports =
   HSClientAccount:HSClientAccount
