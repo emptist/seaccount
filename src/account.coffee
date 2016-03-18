@@ -176,11 +176,13 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
          rmb_total: 258804.344308,
          acc_id: 'htweb080300007199' } }
     ###
-    util.log("got funds #{data}") # callback #, "查詢資產#{data}"
+    # util.log("got funds data", data) # callback
     @資產 = data
+    callback data
 
   查可撤單: (data, callback)->
-    util.log("got orders data")
+    util.log("got orders data", data)
+    callback data
 
   # 可另寫模塊設定保本止損比重
   求止損比重:(代碼)->
