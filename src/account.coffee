@@ -12,6 +12,10 @@ class IBClientAccount extends ClientAccount
 
 ### 注意:
   所有英文方法,多是兼容現有Python接口所需,將來會全部改為中文標準名詞
+
+  TODO:
+  應該分解成單幣種賬戶,分別管理
+
 ###
 class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬戶不同,各公司不同部分再分解到子法
   constructor: (@broker,@id,@password,@servicePassword)->
@@ -86,7 +90,7 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
        keep_cost_price: 0.893,
        LastPrice: 0.963,
        HoldingValue: 14637.6,
-       stock_account: '0097571759',
+       stock_account: 'xxxxxx',
        SecurityCode: '150153',
        SecurityName: '创业板B',
        extra: 0.6629212514 },
@@ -105,7 +109,7 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
        keep_cost_price: 1.951,
        LastPrice: 2.076,
        HoldingValue: 0,
-       stock_account: '0097571759',
+       stock_account: 'xxxxxx',
        SecurityCode: '159915',
        SecurityName: '创业板',
        extra: -0.3333333333 },
@@ -152,7 +156,7 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
          money_name: '人民币',
          rmb_value: 14692.63,
          rmb_total: 258804.344308,
-         acc_id: 'htweb080300007199' },
+         acc_id: 'htweb08030000' },
       '1':
        { money_type: '1',
          TotalAsset: 37601.55,
@@ -163,7 +167,7 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
          money_name: '美元',
          rmb_value: 243575.32059,
          rmb_total: 258804.344308,
-         acc_id: 'htweb080300007199' },
+         acc_id: 'htweb08030000' },
       '2':
        { money_type: '2',
          TotalAsset: 639.63,
@@ -174,7 +178,7 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
          money_name: '港币',
          rmb_value: 536.393718,
          rmb_total: 258804.344308,
-         acc_id: 'htweb080300007199' } }
+         acc_id: 'htweb08030000' } }
     ###
     # util.log("got funds data", data) # callback
     @資產 = data
