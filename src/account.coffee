@@ -44,7 +44,7 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
           console.error "#{obj.代碼}  列入黑名單,不買"
           null
         else if obj.代碼 in @現有
-          if 超重(obj.代碼)
+          if @超重(obj.代碼)
             null
           else
             obj
@@ -96,6 +96,7 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
 
   # 可另寫模塊設定保本止損比重
   求止損比重:(代碼)->
+    console.error "account.coffee >> 待 完成 求止損比重()"
     0.618
 
   ### 查閱資產和持倉狀況,計算該證券比重,對照比重限額,回復是否超重
