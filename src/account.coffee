@@ -125,8 +125,8 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
 
   求各幣資產:(代碼)=>
     幣種 = switch 代碼[0]
-      when 9 then '1'
-      when 2 then '2'
+      when '9' then '1'
+      when '2' then '2'
       else '0'
     return @資產[幣種]
 
@@ -146,7 +146,6 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
 
   應減倉比重:(代碼, 均勻=false)->
     if (@求各幣資產(代碼).rmb_value) < @最小分倉資金量
-      console.log @求各幣資產(代碼).rmb_value
       0
     else if 均勻
       (@求市值(代碼) / @求總額(代碼)) - (1 / @現有.length)
