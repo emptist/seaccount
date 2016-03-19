@@ -151,7 +151,7 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
     else if 均勻
       (@求市值(代碼) / @求總額(代碼)) - (1 / @現有.length)
     else
-      ((@求市值(代碼) / @求總額(代碼)) / @比重上限) - 1
+      (@求市值(代碼) / @求總額(代碼)) - @比重上限
 
 
 module.exports =
