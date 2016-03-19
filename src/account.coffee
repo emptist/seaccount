@@ -100,10 +100,8 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
           callback(command)
         else
           比重 = @應減倉比重(代碼)
-          console.log 比重
           if 比重 > 0
             command = "sellIt,#{代碼},#{比重},#{tick.LastPrice}"
-            console.log "accont.coffee 超重勻倉:", command
             callback(command)
 
     unless @前持倉?
@@ -147,7 +145,8 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
     @比重上限 - (@求市值(代碼) / @求總額(代碼))
 
   應減倉比重:(代碼, 均勻=false)->
-    if @求各幣資產(代碼).rmb_value < @最小分倉資金量
+    if (@求各幣資產(代碼).rmb_value) < @最小分倉資金量
+      console.log @求各幣資產(代碼).rmb_value
       0
     else if 均勻
       (@求市值(代碼) / @求總額(代碼)) - (1 / @現有.length)
