@@ -14,16 +14,19 @@ class IBClientAccount extends ClientAccount
   所有英文方法,多是兼容現有Python接口所需,將來會全部改為中文標準名詞
 
   TODO:
-  應該分解成單幣種賬戶,分別管理
+  1. 應該分解成單幣種賬戶,分別管理
+  2. 持倉比重均攤
 
 ###
 class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬戶不同,各公司不同部分再分解到子法
   constructor: (@broker,@id,@password,@servicePassword)->
-    @現有 = []
-    @可用 = []
-    @資產 = null
-    @持倉 = null
     @黑名單 = []
+    @可用 = []
+    @現有 = []
+    @前持倉 = null # 用於前後比較
+    @資產 = null
+    @前資產 = null # 用於前後比較
+    @持倉 = null
     @比重上限 = 0.5
     @最小分倉資金量 = 20000
 
@@ -72,49 +75,6 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
 
   # 並執行止損
   查詢持倉: (data, callback)->
-    ###
-      此處的 data 是從華泰Python接口讀入的,目前設置為格式:
-    {
-    '0':
-     { index: 0,
-       av_buy_price: 0.821,
-       av_income_balance: 0,
-       CostPrice: 0.893,
-       SecurityAmount: 15200,
-       SecurityAvail: 0,
-       exchange_name: '深圳Ａ',
-       exchange_type: '2',
-       hand_flag: '0',
-       Profit: 1059.61,
-       income_balance_ratio: 7.81,
-       keep_cost_price: 0.893,
-       LastPrice: 0.963,
-       HoldingValue: 14637.6,
-       stock_account: 'xxxxxx',
-       SecurityCode: '150153',
-       SecurityName: '创业板B',
-       extra: 0.6629212514 },
-    '1':
-     { index: 1,
-       av_buy_price: 1.951,
-       av_income_balance: -40.15,
-       CostPrice: 1.951,
-       SecurityAmount: 0,
-       SecurityAvail: 0,
-       exchange_name: '深圳Ａ',
-       exchange_type: '2',
-       hand_flag: '0',
-       Profit: 284.68,
-       income_balance_ratio: 6.41,
-       keep_cost_price: 1.951,
-       LastPrice: 2.076,
-       HoldingValue: 0,
-       stock_account: 'xxxxxx',
-       SecurityCode: '159915',
-       SecurityName: '创业板',
-       extra: -0.3333333333 },
-       ...}
-    ###
     @現有 = []
     @可用 = []
     @持倉 = {}
@@ -142,46 +102,15 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
             command = "sellIt,#{代碼},#{比重},#{tick.LastPrice}"
             callback(command)
 
+    unless @前持倉?
+      @前持倉 = @持倉
 
   查詢資產: (data, callback)->
-    ###
-      目前設計從華泰Python接口獲得數據為:
-      { '0':
-       { money_type: '0',
-         TotalAsset: 14692.63,
-         current_balance: 13.43,
-         AvailableFund: 55.03,
-         fetch_balance: 13.43,
-         market_value: 14637.6,
-         money_name: '人民币',
-         rmb_value: 14692.63,
-         rmb_total: 258804.344308,
-         acc_id: 'htweb08030000' },
-      '1':
-       { money_type: '1',
-         TotalAsset: 37601.55,
-         current_balance: 122.17,
-         AvailableFund: 49.35,
-         fetch_balance: 49.35,
-         market_value: 37552.2,
-         money_name: '美元',
-         rmb_value: 243575.32059,
-         rmb_total: 258804.344308,
-         acc_id: 'htweb08030000' },
-      '2':
-       { money_type: '2',
-         TotalAsset: 639.63,
-         current_balance: 127.63,
-         AvailableFund: 127.63,
-         fetch_balance: 127.63,
-         market_value: 512,
-         money_name: '港币',
-         rmb_value: 536.393718,
-         rmb_total: 258804.344308,
-         acc_id: 'htweb08030000' } }
-    ###
     # util.log("got funds data", data) # callback
     @資產 = data
+    unless @前資產?
+      # 記錄前收盤後資產以便比較決策
+      @前資產 = data
     # 剛測試不可以? 須查誰用到此處回執,或許之前設計成不回執 callback data
 
   查可撤單: (data, callback)->
