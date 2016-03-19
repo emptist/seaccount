@@ -78,9 +78,11 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
     @現有 = []
     @可用 = []
     @持倉 = {}
+
     ### 此處可對不同類型品種設置不同的止損比重率,
       或可在證券中設定,但每個賬戶的風險控制不同,故應因人制宜
     ###
+
     for key, tick of data#, "received #{data}"
       # 保本式止損
       代碼 = tick.SecurityCode
