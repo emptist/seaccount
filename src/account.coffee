@@ -23,7 +23,11 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
     @黑名單 = []
     @可售 = []
     @現有 = []
-    @前持倉 = null # 用於前後比較
+
+    @首次讀取 = true
+
+
+    # 以下變量可能已經無用,待測試
     @資產 = null
     @前資產 = null # 用於前後比較
     @持倉 = null
@@ -54,26 +58,10 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
           #console.error "#{obj.代碼}  列入黑名單,不買"
           null
         else
-          @求資產賬戶(obj.代碼).買入評估(obj) # 新代碼暫時注釋,將取代以下舊代碼
-          ###
-          if obj.代碼 in @現有
-            額度 = Math.min(@求剩餘額度(obj.代碼), obj.比重)
-            if 額度 < 0
-              null
-            else
-              obj.比重 = 額度
-              obj
-          else # 還須 等分資金,控制剩餘資金是否購買,不夠須調整比重.等等.
-            obj
-          ###
+          @求資產賬戶(obj.代碼).買入評估(obj)
 
       when 'sellIt'
         @求資產賬戶(obj.代碼).賣出評估(obj)
-        ###
-        if obj.代碼 in @可售
-           obj
-        else null
-        ###
 
       else null
 
@@ -119,8 +107,8 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
       品種.華泰品種(tick)
       @求資產賬戶(品種.代碼).更新品種(品種,this,callback)
 
-    unless @前持倉?
-      @前持倉 = @持倉
+    if @首次讀取
+      @首次讀取 = false
       for key, value of @資產賬戶
         value.記錄前持倉()
 
@@ -137,11 +125,13 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
         @資產賬戶[key] = new FundAccount(@id)
       @資產賬戶[key].記錄資產(value)
 
+    ###
     @資產 = data # 以下為舊代碼,待評估,或可以不再用
     unless @前資產?
       # 記錄前收盤後資產以便比較決策
       @前資產 = data
     # 剛測試不可以? 須查誰用到此處回執,或許之前設計成不回執 callback data
+    ###
 
   查可撤單: (data, callback)->
     util.log("got orders data", data)
@@ -161,7 +151,7 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
 
 
 
-
+  ###
   # 可另寫模塊設定保本止損比重
   求止損比重:(代碼)->
     0.618
@@ -174,8 +164,9 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
 
   求總額:(代碼)->
     @求各幣資產(代碼).TotalAsset
-
+  ###
   ### 查閱資產和持倉狀況,計算該證券比重,對照比重限額,回復是否超重
+  ###
   ###
   超重:(代碼)->
     @求市值(代碼) / @求總額(代碼) > @比重上限
@@ -190,6 +181,8 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
       (@求市值(代碼) / @求總額(代碼)) - (1 / @現有.length)
     else
       (@求市值(代碼) / @求總額(代碼)) - @比重上限
+  ###
+
 
 
 # 個股持倉狀況,待完善
