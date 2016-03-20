@@ -132,9 +132,9 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
     # util.log("got funds data", data)
     for key, value of data
       unless @資產賬戶[key]?
-        幣種 = value[money_type]
-        幣名 = value[money_type]
-        @資產賬戶[key] = new FundAccount(幣種,幣名)
+        #幣種 = value.money_type
+        #幣名 = value.money_type
+        @資產賬戶[key] = new FundAccount(@id)
       @資產賬戶[key].記錄資產(value)
 
     @資產 = data # 以下為舊代碼,待評估,或可以不再用

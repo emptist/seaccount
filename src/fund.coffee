@@ -2,7 +2,7 @@
   單幣種資產賬戶
 ###
 class FundAccount
-  constructor:(@幣種, @幣名, 賬號)->
+  constructor:(賬號,@幣種, @幣名)->
     @可售 = []
     @現有 = []
     @前持倉 = null # 用於前後比較
