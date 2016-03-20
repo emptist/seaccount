@@ -33,14 +33,18 @@ class FundAccount
     @可售 = []
     @持倉 = {}
 
-  更新品種: (品種,callback)->
+  更新品種: (品種,總賬戶,callback)->
     代碼 = 品種.代碼
     @持倉[代碼] = 品種
 
     if 品種.持倉股數 > 0
       @現有.push 代碼
+      總賬戶.現有.push 代碼
+
     if 品種.可售股數 > 0
       @可售.push 代碼
+      總賬戶.可售.push 代碼
+
       if 品種.盈虧 < 0
         command = "sellIt,#{代碼},#{@求止損比重(代碼)},#{品種.最近價}"
         callback(command)

@@ -21,7 +21,7 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
   constructor: (@broker,@id,@password,@servicePassword)->
     @資產賬戶 = {}
     @黑名單 = []
-    @可用 = []
+    @可售 = []
     @現有 = []
     @前持倉 = null # 用於前後比較
     @資產 = null
@@ -70,7 +70,7 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
       when 'sellIt'
         @求資產賬戶(obj.代碼).賣出評估(obj)
         ###
-        if obj.代碼 in @可用
+        if obj.代碼 in @可售
            obj
         else null
         ###
@@ -85,11 +85,11 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
     for key, value of @資產賬戶
       value.更新持倉()
 
-    ###
+
     @現有 = []
-    @可用 = []
+    @可售 = []
     @持倉 = {}
-    ###
+
     ### 此處可對不同類型品種設置不同的止損比重率,
       或可在證券中設定,但每個賬戶的風險控制不同,故應因人制宜
     ###
@@ -104,7 +104,7 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
       if 現有數量 > 0
         @現有.push 代碼
       if 可用數量 > 0
-        @可用.push 代碼
+        @可售.push 代碼
         if 浮動盈虧 < 0
           command = "sellIt,#{代碼},#{@求止損比重(代碼)},#{tick.LastPrice}"
           callback(command)
@@ -117,7 +117,7 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
 
       品種 = new Position()
       品種.華泰品種(tick)
-      @求資產賬戶(品種.代碼).更新品種(品種,callback)
+      @求資產賬戶(品種.代碼).更新品種(品種,this,callback)
 
     unless @前持倉?
       @前持倉 = @持倉
