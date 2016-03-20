@@ -52,7 +52,7 @@ class FundAccount
         command = "sellIt,#{代碼},#{@求止損比重(代碼)},#{品種.最近價}"
         callback(command)
       else
-        比重 = @應減倉比重(代碼)
+        比重 = @應減倉比重(代碼,true)
         if 比重 > 0
           command = "sellIt,#{代碼},#{比重},#{品種.最近價}"
           callback(command)
@@ -92,7 +92,7 @@ class FundAccount
     if @求資產總額() < @最小分倉資金量()
       0
     else if 均勻
-      (@求市值(代碼) / @求資產總額()) - @求均攤比重() #(1 / @現有.length)
+      (@求市值(代碼) / @求資產總額()) - @求均攤比重()
     else
       (@求市值(代碼) / @求資產總額()) - @比重上限
 
