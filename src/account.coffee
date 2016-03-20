@@ -55,6 +55,7 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
           null
         else
           @求資產賬戶(obj.代碼).買入評估(obj) # 新代碼暫時注釋,將取代以下舊代碼
+          ###
           if obj.代碼 in @現有
             額度 = Math.min(@求剩餘額度(obj.代碼), obj.比重)
             if 額度 < 0
@@ -64,12 +65,15 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
               obj
           else # 還須 等分資金,控制剩餘資金是否購買,不夠須調整比重.等等.
             obj
+          ###
 
       when 'sellIt'
         @求資產賬戶(obj.代碼).賣出評估(obj)
+        ###
         if obj.代碼 in @可用
            obj
         else null
+        ###
 
       else null
 
@@ -81,18 +85,17 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
     for key, value of @資產賬戶
       value.更新持倉()
 
+    ###
     @現有 = []
     @可用 = []
     @持倉 = {}
-
+    ###
     ### 此處可對不同類型品種設置不同的止損比重率,
       或可在證券中設定,但每個賬戶的風險控制不同,故應因人制宜
     ###
 
-    for key, tick of data#, "received #{data}"
-      # 保本式止損
-      @求資產賬戶().更新品種(key, tick) #新代碼將取代以下代碼
-
+    for key, tick of data # 保本式止損
+      ###
       代碼 = tick.SecurityCode
       可用數量 = tick.SecurityAvail
       現有數量 = tick.SecurityAmount
@@ -110,6 +113,11 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
           if 比重 > 0
             command = "sellIt,#{代碼},#{比重},#{tick.LastPrice}"
             callback(command)
+      ###
+
+      品種 = new Position()
+      品種.華泰品種(tick)
+      @求資產賬戶(品種.代碼).更新品種(品種)
 
     unless @前持倉?
       @前持倉 = @持倉
@@ -139,9 +147,6 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
     util.log("got orders data", data)
     # 剛測試不可以? 須查誰用到此處回執,或許之前設計成不回執 callback data
 
-  # 可另寫模塊設定保本止損比重
-  求止損比重:(代碼)->
-    0.618
 
   求資產賬戶:(代碼)=>
     幣種 = switch 代碼[0]
@@ -149,6 +154,17 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
       when '2' then '2'
       else '0'
     @資產賬戶[幣種]
+
+
+
+
+
+
+
+
+  # 可另寫模塊設定保本止損比重
+  求止損比重:(代碼)->
+    0.618
 
   求各幣資產:(代碼)=>
     @求資產賬戶[代碼].資產
@@ -176,12 +192,32 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
       (@求市值(代碼) / @求總額(代碼)) - @比重上限
 
 
+# 個股持倉狀況,待完善
+class Position
+  constructor:(@代碼)->
+
+  華泰品種:(va)->
+    @序號 = va.index
+    @平均買入價 = va.av_buy_price
+    @平均收支平衡 = va.av_income_balance
+    @成本價 = va.CostPrice
+    @持倉股數 = va.SecurityAmount
+    @可售股數 = va.SecurityAvail
+    @交易所 = va.exchange_name
+    @交易所類號 = va.exchange_type
+    @標識 = va.hand_flag
+    @盈虧 = va.Profit
+    @盈虧百分比 = va.income_balance_ratio
+    @保本價 = va.keep_cost_price
+    @最近價 = va.LastPrice
+    @持倉市值 = va.HoldingValue
+    @股東賬號 = va.stock_account
+    @代碼 = va.SecurityCode
+    @名稱 = va.SecurityName
+    @超額 = va.extra # 這是我用Python算好的,可以參考,也可不用,因思路不同
+    return this
+
+
+
 module.exports =
   HSClientAccount:HSClientAccount
-
-###
-待完成
-  求止損比重()
-  超重()
-
-###

@@ -3,7 +3,7 @@
 ###
 class FundAccount
   constructor:(@幣種, @幣名, 賬號)->
-    @可用 = []
+    @可售 = []
     @現有 = []
     @前持倉 = null # 用於前後比較
     @賬號 = 賬號
@@ -30,18 +30,17 @@ class FundAccount
   # 收到新的持倉數據之後先清空原有記錄,準備記錄新數據
   更新持倉: ->
     @現有 = []
-    @可用 = []
+    @可售 = []
     @持倉 = {}
 
-  更新品種: (key,tick)->
-    品種 = (new Position()).華泰品種(tick)
+  更新品種: (品種)->
     代碼 = 品種.代碼
     @持倉[代碼] = 品種
 
-    if 品種.股數 > 0
+    if 品種.持倉股數 > 0
       @現有.push 代碼
-    if 品種.可用股數 > 0
-      @可用.push 代碼
+    if 品種.可售股數 > 0
+      @可售.push 代碼
       if 品種.盈虧 < 0
         command = "sellIt,#{代碼},#{@求止損比重(代碼)},#{品種.最近價}"
         callback(command)
@@ -58,7 +57,7 @@ class FundAccount
 
   # 評估賣出命令 obj, 否決則回復 null
   賣出評估:(obj)->
-    if obj.代碼 in @可用
+    if obj.代碼 in @可售
        obj
     else null
 
@@ -76,46 +75,34 @@ class FundAccount
       obj
 
 
-  求市值:(代碼)->
-    # $$$ 待改為統一接口
-    @持倉[代碼].HoldingValue
 
-  求總額:(代碼)->
-    @資產.總值
+
+  應減倉比重:(代碼, 均勻=false)->
+    if @求資產總額() < @最小分倉資金量()
+      0
+    else if 均勻
+      (@求市值(代碼) / @求資產總額()) - @求均攤比重() #(1 / @現有.length)
+    else
+      (@求市值(代碼) / @求資產總額()) - @比重上限
+
+  # 可另寫模塊設定保本止損比重
+  求止損比重:(代碼)->
+    0.618
+
+  求市值:(代碼)->
+    @持倉[代碼].持倉市值 #HoldingValue
+
+  求資產總額: ->
+    @資產.資產總值 #TotalAsset
 
   求均攤比重: ->
     (1 / @現有.length)
 
   求剩餘額度:(代碼, 均勻=false)->
     上限 = if 均勻 then @求均攤比重() else @比重上限
-    上限 - (@求市值(代碼) / @求總額(代碼))
+    上限 - (@求市值(代碼) / @求資產總額())
 
 
-
-# 個股持倉狀況,待完善
-class Position
-  constructor:(@代碼)->
-
-  華泰品種:(va)->
-    @序號 = va.index
-    @平均買入價 = va.av_buy_price
-    @平均收支平衡 = va.av_income_balance
-    @成本價 = va.CostPrice
-    @股數 = va.SecurityAmount
-    @可用股數 = va.SecurityAvail
-    @交易所 = va.exchange_name
-    @交易所類號 = va.exchange_type
-    @標識 = va.hand_flag
-    @盈虧 = va.Profit
-    @盈虧百分比 = va.income_balance_ratio
-    @保本價 = va.keep_cost_price
-    @最近價 = va.LastPrice
-    @市值 = va.HoldingValue
-    @股東賬號 = va.stock_account
-    @代碼 = va.SecurityCode
-    @名稱 = va.SecurityName
-    @超額 = va.extra # 這是我用Python算好的,可以參考,也可不用,因思路不同
-    return this
 
 # 待完善
 class Capital
@@ -123,11 +110,11 @@ class Capital
 
   華泰資產:(value)-> # 樣例
     @幣種 = value.money_type
-    @總值 = value.TotalAsset
+    @資產總值 = value.TotalAsset
     @餘額 = value.current_balance
     @可用餘額 = value.AvailableFund
     @可取餘額 = value.fetch_balance
-    @市值 = value.market_value
+    @證券市值 = value.market_value
     @幣名 = value.money_name
     return this
 
