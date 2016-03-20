@@ -2,7 +2,7 @@
   單幣種資產賬戶
 ###
 class FundAccount
-  constructor:(賬號,@幣種, @幣名)->
+  constructor:(賬號)->
     @可售 = []
     @現有 = []
     @前持倉 = null # 用於前後比較
@@ -13,11 +13,11 @@ class FundAccount
     @比重上限 = 0.5
 
   最小分倉資金量: ->
-    switch @幣名
+    switch @資產.幣名
       when '人民币' then 20000
       when '美元' then 3000
       when '港币' then 20000
-      else throw "未知貨幣#{@幣名}"
+      else throw "未知貨幣#{@資產.幣名}"
 
   # 更新記錄
   記錄資產:(value)->
