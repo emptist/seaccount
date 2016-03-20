@@ -55,13 +55,17 @@ class FundAccount
     unless @前持倉?
       @前持倉 = @持倉
 
+
+
   # 評估賣出命令 obj, 否決則回復 null
   賣出評估:(obj)->
     if obj.代碼 in @可售
        obj
     else null
 
+
   # 評估買入命令 obj, 否決則回復 null
+  # 待完善
   買入評估:(obj)->
     #以下代碼並未完善買入比重,待資產賬戶完善後再改
     if obj.代碼 in @現有
