@@ -1,6 +1,6 @@
 # 一種幣種資金狀況的資產賬戶
 util = require('util')
-FundAccount = require('./fund')
+#FundAccount = require('./fund')
 
 # 某特定券商的客戶賬戶,其中可能有若干證券賬戶,如滬深A股B股
 class ClientAccount # 客戶賬戶
@@ -17,8 +17,11 @@ class IBClientAccount extends ClientAccount
   3. 分解成單幣種賬戶,分別管理
 
 ###
+###
+  options: @broker,@id,@password,@servicePassword
+###
 class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬戶不同,各公司不同部分再分解到子法
-  constructor: (@broker,@id,@password,@servicePassword)->
+  constructor: (FundAccount,options)-> #(@broker,@id,@password,@servicePassword)->
     @資產賬戶 = {}
     @黑名單 = []
     @可售 = []
