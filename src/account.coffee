@@ -1,6 +1,5 @@
 # 一種幣種資金狀況的資產賬戶
 util = require('util')
-#FundAccount = require('./fund')
 
 # 某特定券商的客戶賬戶,其中可能有若干證券賬戶,如滬深A股B股
 class ClientAccount # 客戶賬戶
