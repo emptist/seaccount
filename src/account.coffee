@@ -21,7 +21,7 @@ class IBClientAccount extends ClientAccount
   options: @broker,@id,@password,@servicePassword
 ###
 class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬戶不同,各公司不同部分再分解到子法
-  constructor: (FundAccount,options)-> #(@broker,@id,@password,@servicePassword)->
+  constructor: (@FundAccount,options)-> #(@broker,@id,@password,@servicePassword)->
     @資產賬戶 = {}
     @黑名單 = []
     @可售 = []
@@ -89,7 +89,7 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
   查詢資產: (data, 回執)->
     for key, value of data
       unless @資產賬戶[key]?
-        @資產賬戶[key] = new FundAccount(@id)
+        @資產賬戶[key] = new @FundAccount(@id)
       @資產賬戶[key].記錄資產(value)
 
 
