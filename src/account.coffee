@@ -9,12 +9,6 @@ class IBClientAccount extends ClientAccount
 
 ### 注意:
   所有英文方法,多是兼容現有Python接口所需,將來會全部改為中文標準名詞
-
-  TODO:
-  1. 資產和持倉與前面比較,制定止損
-  2. 持倉比重均攤,超額則賣出(完成),買入時也自動均衡
-  3. 分解成單幣種賬戶,分別管理
-
 ###
 ###
   options: @broker,@id,@password,@servicePassword
