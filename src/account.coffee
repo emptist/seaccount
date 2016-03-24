@@ -57,18 +57,27 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
     @現有 = []
     @可售 = []
 
+    ###*
+
+      以下代碼有兩次循環
+
+      這是必須的!
+
+      不要試圖合併優化!
+
+    *###
+
+    ###* 1 更新前 循環1 *###
     for key, value of @資產賬戶
-      value.更新持倉()
-      if @首次讀取
-        value.記錄前持倉()
+      value.準備更新持倉()
 
-    @首次讀取 = false
-
+    ###* 2 更新中 *###
     for key, tick of data # 保本式止損
       品種 = new Position()
       品種.華泰品種(tick)
       @求資產賬戶(品種.代碼).更新品種(品種,this,callback)
 
+    ###* 3 更新後 循環2 *###
     if @首次讀取
       for key, value of @資產賬戶
         value.記錄前持倉()
