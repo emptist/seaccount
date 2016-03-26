@@ -16,9 +16,11 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
   constructor: (@FundAccount,options)-> #(@broker,@id,@password,@servicePassword)->
     @資產賬戶 = {}
     @黑名單 = []
-    @可售 = []
-    @現有 = []
-    @資產賬戶尚未就緒 = true
+
+    #@可售 = []
+    #@現有 = []
+
+    #@資產賬戶尚未就緒 = true
 
   操作指令:(obj, 回執)->
     ###過濾操作指令
@@ -54,8 +56,8 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
 
   # 並執行止損
   查詢持倉: (data, callback)->
-    @現有 = []
-    @可售 = []
+    #@現有 = []
+    #@可售 = []
 
     ###*
 
@@ -77,11 +79,13 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
       品種.華泰品種(tick)
       @求資產賬戶(品種.代碼).更新品種(品種,this,callback)
 
-    ###* 3 更新後 循環2 *###
+    ###* 3 更新後 循環2
+    設計錯誤,已經改由 fund.coffee 更新品種時各自添加拷貝入前持倉
     if @資產賬戶尚未就緒
       for key, value of @資產賬戶
         value.記錄前持倉()
       @資產賬戶尚未就緒 = false
+    *###
 
 
   ###
