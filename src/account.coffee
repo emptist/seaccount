@@ -18,7 +18,7 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
     @黑名單 = []
     @可售 = []
     @現有 = []
-    @首次讀取 = true
+    @資產賬戶尚未就緒 = true
 
   操作指令:(obj, 回執)->
     ###過濾操作指令
@@ -78,10 +78,10 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
       @求資產賬戶(品種.代碼).更新品種(品種,this,callback)
 
     ###* 3 更新後 循環2 *###
-    if @首次讀取
+    if @資產賬戶尚未就緒
       for key, value of @資產賬戶
         value.記錄前持倉()
-      @首次讀取 = false
+      @資產賬戶尚未就緒 = false
 
 
   ###
@@ -110,6 +110,12 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
 # 個股持倉狀況,待完善
 class Position
   constructor:(@代碼)->
+
+  拷貝: ->
+    品種 = new Position(@代碼)
+    for key, val of this
+      品種[key] = val
+    return 品種
 
   華泰品種:(va)->
     @序號 = va.index
