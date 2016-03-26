@@ -22,8 +22,6 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
     @可售 = []
     @現有 = []
 
-    #@資產賬戶尚未就緒 = true
-
   操作指令:(obj, 回執)->
     ###過濾操作指令
 
@@ -38,10 +36,10 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
       when 'buyIt'
         ###
         須逐步實現以下買入控制:
-          1. 排除黑名單
-          1. 調整買入數量,令不超比例
-          1. 檢查委託價格
-          1. 回報成交狀態
+          1. 排除黑名單,實現
+          2. 調整買入數量,令不超比例, 建成了機制
+          3. 檢查委託價格
+          4. 回報成交狀態
         ###
         if obj.代碼 in @黑名單
           null
@@ -61,17 +59,7 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
     @現有 = []
     @可售 = []
 
-    ###*
-
-      以下代碼有兩次循環
-
-      這是必須的!
-
-      不要試圖合併優化!
-
-    *###
-
-    ###* 1 更新前 循環1 *###
+    ###* 1 更新前  *###
     for key, value of @資產賬戶
       value.準備更新持倉()
 
@@ -80,15 +68,6 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
       品種 = new Position()
       品種.華泰品種(tick)
       @求資產賬戶(品種.代碼).更新品種(品種,this,callback)
-
-    ###* 3 更新後 循環2
-    設計錯誤,已經改由 fund.coffee 更新品種時各自添加拷貝入前持倉
-    if @資產賬戶尚未就緒
-      for key, value of @資產賬戶
-        value.記錄前持倉()
-      @資產賬戶尚未就緒 = false
-    *###
-
 
   ###
     按照目前設計, 此處 回執 不要用
