@@ -17,8 +17,10 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
     @資產賬戶 = {}
     @黑名單 = []
 
-    #@可售 = []
-    #@現有 = []
+    ###* 在資產賬戶中更新以下兩個變量備用勿刪
+    *###
+    @可售 = []
+    @現有 = []
 
     #@資產賬戶尚未就緒 = true
 
@@ -56,8 +58,8 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
 
   # 並執行止損
   查詢持倉: (data, callback)->
-    #@現有 = []
-    #@可售 = []
+    @現有 = []
+    @可售 = []
 
     ###*
 
