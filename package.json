@@ -2,9 +2,8 @@
   "name": "seaccount",
   "version": "1.4.8",
   "description": "security account",
-  "main": "index.js",
+  "main": "index.coffee",
   "scripts": {
-    "preversion": "coffee -bcmo lib src; git commit -am 'modified and re-build js;'",
     "postversion": "git push; echo 已經存庫可以發佈",
     "prepublish": "cd ..; echo 現在發佈",
     "test": "echo \"Error: no test specified\" && exit 1"
