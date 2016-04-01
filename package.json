@@ -4,8 +4,12 @@
   "description": "security account",
   "main": "account.coffee",
   "scripts": {
-    "postversion": "git push; echo 已經存庫可以發佈",
-    "prepublish": "cd ..; echo 現在發佈",
+    "commit": "npm-run-all patch pub",
+    "prepatch": "git add --all; git commit -am 'modified'",
+    "patch": "npm version patch",
+    "postversion": "git push",
+    "prepub": "echo 已經git push 準備 publish...",
+    "pub": "npm publish ../seaccount",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
