@@ -91,7 +91,6 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
       else '0'
     @資產賬戶[幣種]
 
-
 # 個股持倉狀況,待完善
 class Position
   constructor:(@代碼)->
