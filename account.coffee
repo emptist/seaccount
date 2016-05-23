@@ -45,9 +45,13 @@ class HSClientAccount extends ClientAccount # 滬深賬戶與盈透等國外賬�
           null
         else
           @求資產賬戶(指令.證券代碼).買入評估(指令)
-
       when 'sellIt'
         @求資產賬戶(指令.證券代碼).賣出評估(指令)
+      when 'test_buyIt'
+        @求資產賬戶(指令.證券代碼).買入評估(指令)
+      when 'test_sellIt'
+        @求資產賬戶(指令.證券代碼).賣出評估(指令)
+
 
       else null
 
